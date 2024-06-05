@@ -1,89 +1,111 @@
-let products = [
-    {
-      id: 1,
-      name: "sofa",
-      description: "a sofa",
-      price: 1200,
-      quantity: 3,
-      category: "furniture",
-    },
-    {
-      id: 2,
-      name: "cheeseburger",
-      description: "a snack",
-      price: 300,
-      quantity: 40,
-      category: "food",
-    },
-    {
-      id: 3,
-      name: "hamburger",
-      description: "a snack",
-      price: 40,
-      quantity: Infinity,
-      category: "food",
-    },
-  ];
-  
-  // get all products
-  server.get("/api/products", function (req, resp) {
-    const nameQuery = req.query.name;
-    if (nameQuery) {
-      const matchingProducts = products.filter(function (product) {
-        return product.name.includes(nameQuery);
+const database = require('./database');
+const path = require('path');
+const fs = require('fs');
+
+const getAllProducts = (req, res) => {
+  database.query("SELECT * FROM products", (err, results) => {
+    if (err) {
+      console.error('Error fetching products:', err);
+      res.status(500).send('Failed to fetch products');
+    } else {
+      res.json(results);
+    }
+  });
+};
+
+const createProduct = (req, res) => {
+  const body = req.body;
+  if (body.name === undefined || body.description === undefined ||
+      body.price === undefined || body.quantity === undefined ||
+      body.category === undefined) {
+    res.status(400).send("Bad Request");
+  } else {
+    database.query('INSERT INTO products (name, description, price, quantity, category) VALUES (?, ?, ?, ?, ?)',
+      [body.name, body.description, body.price, body.quantity, body.category], (err, result) => {
+        if (err) {
+          console.error('Error creating product:', err);
+          res.status(500).send("Error creating product");
+        } else {
+          res.status(201).send("Product created");
+        }
       });
-      resp.status(200).json(matchingProducts);
+  }
+};
+
+const getProductById = (req, res) => {
+  const productid = req.params.id;
+  database.query('SELECT * FROM products WHERE id = ?', [productid], (err, results) => {
+    if (err) {
+      console.error('Error fetching product by ID:', err);
+      res.status(500).send('Failed to fetch product');
+    } else if (results.length === 0) {
+      res.status(404).send('Product not found');
     } else {
-      resp.status(200).json(products);
+      res.json(results[0]);
     }
   });
-  
-  // create a product
-  server.post("/api/products", async function (req, resp) {
-    const body = req.body;
-    if (body.name === undefined || body.description === undefined) {
-      resp.status(400).send("Bad Request");
+};
+
+const deleteAllProducts = (req, res) => {
+  database.query("DELETE FROM products", (err, results) => {
+    if (err) {
+      console.error('Error deleting products:', err);
+      res.status(500).send("Error deleting products");
     } else {
-      body.id = products.length + 1;
-      products.push(body);
-      resp.status(201).send(body);
+      res.status(200).send("All products deleted");
     }
   });
-  
-  // get a product by id
-  server.get("/api/product/:id", function (req, resp) {
-    const id = Number(req.params.id);
-    console.log(id);
-    if (!isNaN(id)) {
-      const foundProduct = products.find(function (product) {
-        return product.id === id;
-      });
-      if (foundProduct) {
-        resp.status(200).json(foundProduct); // ok found
-      } else {
-        resp.status(404).send("Not Found"); // not found
-      }
+};
+
+const deleteProductById = (req, res) => {
+  const productid = req.params.id;
+  database.query('DELETE FROM products WHERE id = ?', [productid], (err, results) => {
+    if (err) {
+      console.error('Error deleting product:', err);
+      res.status(500).send('Failed to delete product');
+    } else if (results.affectedRows === 0) {
+      res.status(404).send('Product not found');
     } else {
-      resp.status(400).send("Bad Request"); // bad request
+      res.status(200).send('Product deleted');
     }
   });
-  
-  // delete a product by id
-  server.delete("/api/products/:id", function (req, resp) {
-    const id = Number(req.params.id);
-    if (!isNaN(id)) {
-      const foundProduct = products.find(function (product) {
-        return product.id === id;
-      });
-      if (foundProduct) {
-        products = products.filter(function (product) {
-          return product.id !== id;
-        });
-        resp.status(200).json(foundProduct);
-      } else {
-        resp.status(404).send("Not Found");
-      }
+};
+
+const editProductById = (req, res) => {
+  const productid = req.params.id;
+  const body = req.body;
+  const query = 'UPDATE products SET name = ?, description = ?, price = ?, quantity = ?, category = ? WHERE id = ?';
+  database.query(query, [body.name, body.description, body.price, body.quantity, body.category, productid], (err, results) => {
+    if (err) {
+      console.error('Error updating product:', err);
+      res.status(500).send('Failed to update product');
+    } else if (results.affectedRows === 0) {
+      res.status(404).send('Product not found');
     } else {
-      resp.status(400).send("Bad Request");
+      res.status(200).send('Product updated');
     }
   });
+};
+
+const findProductsByCharacterMatch = (req, res) => {
+  const character = req.params.character;
+  const query = 'SELECT * FROM products WHERE name LIKE ?';
+  database.query(query, [`%${character}%`], (err, results) => {
+    if (err) {
+      console.error('Error fetching products:', err);
+      res.status(500).send('Failed to fetch products');
+    } else {
+      res.json(results);
+    }
+  });
+};
+
+module.exports = {
+  getAllProducts,
+  createProduct,
+  getProductById,
+  deleteAllProducts,
+  deleteProductById,
+  editProductById,
+  findProductsByCharacterMatch
+};

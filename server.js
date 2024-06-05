@@ -10,13 +10,14 @@ app.use(bodyParser.json());
 
 // Routes
 
-app.get('/api/products', logic.getAllUsers);
-app.get('/api/product/:id', logic.getUserById);
-app.get('/api/edit/:id', logic.editUserForm);
-app.post('/api/update/:id', logic.updateUser);
-app.post('/api/delete/:id', logic.deleteUser);
-app.get('api/create', logic.createUserForm);
-app.post('api/create', logic.createUser);
+app.get('/api/products', logic.getAllProducts);
+app.get('/api/products/:id', logic.getProductById);
+app.get('/api/products/search/:character', logic.findProductsByCharacterMatch);
+app.post('/api/products', logic.createProduct);
+app.put('/api/products/:id', logic.editProductById);
+app.delete('/api/products/:id', logic.deleteProductById);
+app.delete('/api/products', logic.deleteAllProducts);
+
 
 
 
