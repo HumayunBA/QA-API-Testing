@@ -247,4 +247,114 @@ describe('Product Logic', () => {
 
       logic.editProductById(req, res);
 
-      expect(database.query.calledWith
+      expect(database.query.calledWith(
+        'UPDATE products SET name = ?, description = ?, price = ?, quantity = ?, category = ? WHERE id = ?',
+        [
+          req.body.name,
+          req.body.description,
+          req.body.price,
+          req.body.quantity,
+          req.body.category,
+          req.params.id
+        ]
+      )).to.be.true;
+      expect(res.status.calledWith(200)).to.be.true;
+      expect(res.send.calledWith('Product updated')).to.be.true;
+      done();
+    });
+
+    it('should handle error when updating product by ID', (done) => {
+      req.params.id = 1;
+      req.body = {
+        name: 'Updated Product',
+        description: 'Updated Description',
+        price: 20.0,
+        quantity: 200,
+        category: 'Updated Category'
+      };
+      const error = new Error('Database error');
+      sandbox.stub(database, 'query').callsFake((query, params, callback) => {
+        callback(error, null);
+      });
+
+      logic.editProductById(req, res);
+
+      expect(database.query.calledWith(
+        'UPDATE products SET name = ?, description = ?, price = ?, quantity = ?, category = ? WHERE id = ?',
+        [
+          req.body.name,
+          req.body.description,
+          req.body.price,
+          req.body.quantity,
+          req.body.category,
+          req.params.id
+        ]
+      )).to.be.true;
+      expect(res.status.calledWith(500)).to.be.true;
+      expect(res.send.calledWith('Failed to update product')).to.be.true;
+      done();
+    });
+
+    it('should return 404 if product not found when updating by ID', (done) => {
+      req.params.id = 1;
+      req.body = {
+        name: 'Updated Product',
+        description: 'Updated Description',
+        price: 20.0,
+        quantity: 200,
+        category: 'Updated Category'
+      };
+      sandbox.stub(database, 'query').callsFake((query, params, callback) => {
+        callback(null, { affectedRows: 0 });
+      });
+
+      logic.editProductById(req, res);
+
+      expect(database.query.calledWith(
+        'UPDATE products SET name = ?, description = ?, price = ?, quantity = ?, category = ? WHERE id = ?',
+        [
+          req.body.name,
+          req.body.description,
+          req.body.price,
+          req.body.quantity,
+          req.body.category,
+          req.params.id
+        ]
+      )).to.be.true;
+      expect(res.status.calledWith(404)).to.be.true;
+      expect(res.send.calledWith('Product not found')).to.be.true;
+      done();
+    });
+  });
+
+  describe('findProductsByCharacterMatch', () => {
+    it('should find products by character match successfully', (done) => {
+      req.params.char = 'A';
+      const products = [{ id: 1, name: 'Product A' }, { id: 2, name: 'Product B' }];
+      sandbox.stub(database, 'query').callsFake((query, params, callback) => {
+        callback(null, products);
+      });
+
+      logic.findProductsByCharacterMatch(req, res);
+
+      expect(database.query.calledWith('SELECT * FROM products WHERE name LIKE ?', [`%${req.params.char}%`])).to.be.true;
+      expect(res.json.calledWith(products)).to.be.true;
+      done();
+    });
+
+    it('should handle error when finding products by character match', (done) => {
+      req.params.char = 'A';
+      const error = new Error('Database error');
+      sandbox.stub(database, 'query').callsFake((query, params, callback) => {
+        callback(error, null);
+      });
+
+      logic.findProductsByCharacterMatch(req, res);
+
+      expect(database.query.calledWith('SELECT * FROM products WHERE name LIKE ?', [`%${req.params.char}%`])).to.be.true;
+      expect(res.status.calledWith(500)).to.be.true;
+      expect(res.send.calledWith('Failed to find products')).to.be.true;
+      done();
+    });
+  });
+});
