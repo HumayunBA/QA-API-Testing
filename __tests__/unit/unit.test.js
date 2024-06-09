@@ -1,4 +1,4 @@
-const database = require('../../database'); // Adjust the path as necessary
+const database = require('../../database'); 
 const logic = require('../../logic');
 
 // Mock the database module
@@ -19,7 +19,7 @@ describe('Product Logic', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks(); // Clear mock calls and instances between tests
+    jest.clearAllMocks(); 
   });
 
   describe('getAllProducts', () => {
