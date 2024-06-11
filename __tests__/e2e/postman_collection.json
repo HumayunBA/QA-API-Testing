@@ -1,0 +1,322 @@
+{
+	"info": {
+		"_postman_id": "7f18ae41-153c-4cee-8930-83b7c75ef6b2",
+		"name": "Assignement 2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30406795"
+	},
+	"item": [
+		{
+			"name": "POST products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successfully created product\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(201);\r",
+							"    pm.expect(pm.response.text()).to.equal(\"Product created\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Product creation with duplicate ID (error handling)\", function () {\r",
+							"    pm.sendRequest(\"http://localhost:4000/api/products\", \"POST\", {\r",
+							"        \"id\": \"1\",\r",
+							"        \"name\": \"Veg burger\",\r",
+							"        \"description\": \"a snack\",\r",
+							"        \"price\": \"150\",\r",
+							"        \"quantity\": \"7460\",\r",
+							"        \"category\": \"food\"\r",
+							"    }, function (err, response) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(response.code).to.be.oneOf([400, 409]);\r",
+							"        pm.expect(response.json()).to.have.property(\"error\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n{\r\n    \"id\": \"1\",\r\n    \"name\": \"Veg burger\",\r\n    \"description\": \"a snack\",\r\n    \"price\": \"150\",\r\n    \"quantity\": \"7460\",\r\n    \"category\":\"food\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successfully CREATE a new product\", function() {\r",
+							"    pm.expect(pm.response.code).to.be.equal(200)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Sandwitch\",\r\n    \"description\": \"a snack\",\r\n    \"price\": \"680\",\r\n    \"quantity\": \"789\",\r\n    \"category\":\"food\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/products/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"products",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET product by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Product status code check\", function () {\r",
+							"    if (pm.response.code === 200) {\r",
+							"        pm.test(\"Successful response\", function () {\r",
+							"\r",
+							"        });\r",
+							"    } else {\r",
+							"        pm.test(\"Get product by ID - Not Found (or other error)\", function () {\r",
+							"            pm.expect(pm.response.text()).to.include(\"Product not found\");\r",
+							"            pm.expect(pm.response.code).to.be.oneOf([400, 404, 403]);\r",
+							"            pm.expect(pm.response.text()).to.not.include(\"error\");\r",
+							"\r",
+							"        });\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/products/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"products",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET products by characters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is an array\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an('array');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/products/search/sand",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"products",
+						"search",
+						"sand"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE product by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successfully DELETE the product by id\", function() {\r",
+							"    pm.expect(pm.response.code).to.be.equal(200)\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/products/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"products",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE all products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"All products are deleted successfully\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

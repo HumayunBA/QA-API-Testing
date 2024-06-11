@@ -4,7 +4,10 @@
   "description": "",
   "main": "database.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:unit": "jest __tests__/unit",
+    "test:integration": "jest __tests__/integration",
+    "test:e2e": "newman run __tests__/e2e/postman_collection.json",
     "start": "node server.js"
   },
   "repository": {
@@ -19,11 +22,14 @@
   "homepage": "https://github.com/HumayunBA/QA-API-Testing#readme",
   "dependencies": {
     "body-parser": "^1.20.2",
-    "chai": "^5.1.1",
+    "chai": "^4.3.4",
+    "chai-http": "^4.4.0",
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
     "jest": "^29.7.0",
     "mocha": "^10.4.0",
+    "mysql2": "^3.10.0",
+    "node-mocks-http": "^1.14.1",
     "sinon": "^18.0.0",
     "supertest": "^7.0.0"
   }

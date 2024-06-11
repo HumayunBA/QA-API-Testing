@@ -15,13 +15,11 @@ const getAllProducts = (req, res) => {
 
 const createProduct = (req, res) => {
   const body = req.body;
-  if (body.name === undefined || body.description === undefined ||
-      body.price === undefined || body.quantity === undefined ||
-      body.category === undefined) {
+  if (!body.id || !body.name || !body.description || !body.price || !body.quantity || !body.category) {
     res.status(400).send("Bad Request");
   } else {
-    database.query('INSERT INTO products (name, description, price, quantity, category) VALUES (?, ?, ?, ?, ?)',
-      [body.name, body.description, body.price, body.quantity, body.category], (err, result) => {
+    database.query('INSERT INTO products (id, name, description, price, quantity, category) VALUES (?, ?, ?, ?, ?, ?)',
+      [body.id, body.name, body.description, body.price, body.quantity, body.category], (err, result) => {
         if (err) {
           console.error('Error creating product:', err);
           res.status(500).send("Error creating product");
@@ -32,9 +30,10 @@ const createProduct = (req, res) => {
   }
 };
 
+
 const getProductById = (req, res) => {
-  const productid = req.params.id;
-  database.query('SELECT * FROM products WHERE id = ?', [productid], (err, results) => {
+  const productID = req.params.id;
+  database.query('SELECT * FROM products WHERE id = ?', [productID], (err, results) => {
     if (err) {
       console.error('Error fetching product by ID:', err);
       res.status(500).send('Failed to fetch product');
