@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "database.js",
+
   "scripts": {
     "test": "jest",
     "test:unit": "jest __tests__/unit",
