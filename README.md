@@ -16,7 +16,7 @@ Ensure you have Node.js and MySQL installed. Then, install the following depende
     "node-mocks-http": "^1.14.1",
     "sinon": "^18.0.0",
     "supertest": "^7.0.0"
-mochawesome: ^7.1.3
+
 Then npm start for the server and to run the tests please use the following command: npm run  test:unit, test:integration, and test:e2e. All tests (18 unit tests, 7 integration tests, 10 e2e tests) shall pass. Then see the norman in JSON format.
 
 Note: please use your own database table name in the logic files.
